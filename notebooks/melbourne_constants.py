@@ -1,6 +1,5 @@
 
-# Categorical features are assumed to each have a maximum value in the dataset.
-MAX_CATEGORICAL_FEATURE_VALUES = [24, 31, 12]
+MAX_CATEGORICAL_FEATURE_VALUES = [303, 3, 5, 10, 32, 8]
 
 CATEGORICAL_FEATURE_KEYS = [
     'Suburb',
@@ -15,20 +14,20 @@ CATEGORICAL_FEATURE_KEYS = [
 
 # Numerical features
 DENSE_FLOAT_FEATURE_KEYS = ['Rooms',
-                            'Price', 
+                            'Price',
                             'Distance',
                             'Postcode',
                             'Bedroom2',
                             'Bathroom',
-                            'Car',
-                            'Landsize',
-                            'BuildingArea',
-                            'YearBuilt']
+                            'Car']
+#                            'Landsize',
+#                            'BuildingArea',
+#                            'YearBuilt']
 
 # Number of buckets used by tf.transform for encoding numerical features into a bucket generaliation
-FEATURE_BUCKET_COUNT = 10
+FEATURE_BUCKET_COUNT = 100
 
-BUCKET_FEATURE_KEYS = [
-    'Lattitude', 
-    'Longtitude'
-]
+BUCKET_FEATURE_KEYS = []
+#    'Lattitude', 
+#    'Longtitude'
+#]
