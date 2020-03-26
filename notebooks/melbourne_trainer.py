@@ -16,6 +16,7 @@ _FEATURE_BUCKET_COUNT = melbourne_constants.FEATURE_BUCKET_COUNT
 _BUCKET_FEATURE_KEYS = melbourne_constants.BUCKET_FEATURE_KEYS
 _CATEGORICAL_FEATURE_KEYS = melbourne_constants.CATEGORICAL_FEATURE_KEYS
 _MAX_CATEGORICAL_FEATURE_VALUES = melbourne_constants.MAX_CATEGORICAL_FEATURE_VALUES
+_LABEL = melbourne_constants.LABEL
 
 
 def _gzip_reader_fn(filenames):
@@ -33,11 +34,11 @@ def _get_serve_tf_examples_fn(model, tf_transform_output):
     def serve_tf_examples_fn(serialized_tf_examples):
         """Returns the output to be used in the serving signature."""
         feature_spec = tf_transform_output.raw_feature_spec()
-        #feature_spec.pop(_LABEL_KEY)
+        feature_spec.pop(_LABEL)
         parsed_features = tf.io.parse_example(serialized_tf_examples, feature_spec)
 
         transformed_features = model.tft_layer(parsed_features)
-        #transformed_features.pop(_transformed_name(_LABEL_KEY))
+        transformed_features.pop(_LABEL)
 
         return model(transformed_features)
 
@@ -66,7 +67,8 @@ def _input_fn(file_pattern: Text,
         file_pattern=file_pattern,
         batch_size=batch_size,
         features=transformed_feature_spec,
-        reader=_gzip_reader_fn)
+        reader=_gzip_reader_fn,
+        label_key=_LABEL)
 
     return dataset
 
@@ -142,11 +144,11 @@ def _wide_and_deep_classifier(wide_columns, deep_columns, dnn_hidden_units):
   #    for colname in _transformed_names(_VOCAB_FEATURE_KEYS)
   #})
     input_layers.update({
-      colname: tf.keras.layers.Input(name=colname, shape=(), dtype='int32')
+      colname: tf.keras.layers.Input(name=colname, shape=(), dtype='int64')
       for colname in _BUCKET_FEATURE_KEYS
     })
     input_layers.update({
-      colname: tf.keras.layers.Input(name=colname, shape=(), dtype='int32')
+      colname: tf.keras.layers.Input(name=colname, shape=(), dtype='int64')
       for colname in _CATEGORICAL_FEATURE_KEYS
     })
 
@@ -157,7 +159,7 @@ def _wide_and_deep_classifier(wide_columns, deep_columns, dnn_hidden_units):
     wide = tf.keras.layers.DenseFeatures(wide_columns)(input_layers)
 
     output = tf.keras.layers.Dense(
-      1, activation='sigmoid')(
+      1, activation='relu')(
           tf.keras.layers.concatenate([deep, wide]))
 
     model = tf.keras.Model(input_layers, output)

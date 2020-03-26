@@ -27,7 +27,10 @@ DENSE_FLOAT_FEATURE_KEYS = ['Rooms',
 # Number of buckets used by tf.transform for encoding numerical features into a bucket generaliation
 FEATURE_BUCKET_COUNT = 100
 
+
 BUCKET_FEATURE_KEYS = []
 #    'Lattitude', 
 #    'Longtitude'
 #]
+
+LABEL = 'Price'
